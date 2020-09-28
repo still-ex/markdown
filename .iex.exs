@@ -6,4 +6,6 @@ defmodule Fxt do
   def medium, do: File.read!("test/fixtures/medium.md")
 
   def long, do: File.read!("test/fixtures/long.md")
+
+  def xlong, do: File.read!("test/fixtures/xlong.md")
 end

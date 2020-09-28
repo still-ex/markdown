@@ -9,6 +9,7 @@
 #include "html.h"
 
 #define OUTPUT_UNIT 128
+#define ARBITRARY_DIRTY_NIF_THRESHOLD 50000
 
 typedef struct {
   ERL_NIF_TERM atom_autolink;
@@ -105,7 +106,7 @@ apply_html_extensions(const ERL_NIF_TERM* tuple, markdown_priv* priv, unsigned i
 }
 
 static ERL_NIF_TERM
-to_html(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]) {
+do_to_html(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]) {
   ErlNifBinary input;
   ErlNifBinary output;
 
@@ -189,6 +190,31 @@ to_html(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]) {
   hoedown_buffer_free(ob);
 
   return enif_make_binary(env, &output);
+}
+
+static ERL_NIF_TERM
+to_html(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]) {
+  ErlNifBinary input;
+
+  if (enif_inspect_binary(env, argv[0], &input) == 0) {
+    return enif_make_badarg(env);
+  }
+
+  if (input.size < 1) {
+    return argv[0];
+  }
+
+  if (input.size > ARBITRARY_DIRTY_NIF_THRESHOLD) {
+#ifdef PROFILE
+      fprintf(stderr, "[markdown.c]: Input above arbitrary threshold. Running dirty NIF.\n");
+#endif
+      enif_schedule_nif(env, "do_to_html", ERL_NIF_DIRTY_JOB_CPU_BOUND, do_to_html, argc, argv);
+  } else {
+#ifdef PROFILE
+      fprintf(stderr, "[markdown.c]: Input below arbitrary threshold. Running regular NIF.\n");
+#endif
+      do_to_html(env, argc, argv);
+  }
 }
 
 static ErlNifFunc funcs[] = {
