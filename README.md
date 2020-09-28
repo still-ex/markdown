@@ -47,4 +47,3 @@ You can find examples in the [test module](./test/markdown_test.exs).
 [2]: http://www.erlang.org/doc/tutorial/nif.html
 [3]: https://github.com/hoedown/hoedown
 [4]: https://github.com/zambal/markdown/commit/792a414de074d96ac47b5b52d212b7197ce04462
-[5]: https://github.com/hoedown/hoedown/blob/8ab482af918f6b5c296dca80f0c67e924c06b5c2/bin/hoedown.c#L49
