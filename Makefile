@@ -20,6 +20,10 @@ ifneq ($(OS),Windows_NT)
 	endif
 endif
 
+ifdef PROFILE
+	CFLAGS += -DPROFILE
+endif
+
 .PHONY: all markdown clean
 
 all: markdown

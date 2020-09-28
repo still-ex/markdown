@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdint.h>
+#include <time.h>
 
 #include "erl_nif.h"
 
@@ -120,6 +121,11 @@ to_html(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]) {
   hoedown_document* document;
   hoedown_renderer* renderer;
 
+#ifdef PROFILE
+  clock_t prof_start_time, prof_end_time;
+  double elapsed_time;
+#endif
+
   if (enif_inspect_binary(env, argv[0], &input) == 0) {
     return enif_make_badarg(env);
   }
@@ -148,7 +154,31 @@ to_html(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]) {
   ob = hoedown_buffer_new(OUTPUT_UNIT);
   renderer = hoedown_html_renderer_new(html_extensions, 0);
   document = hoedown_document_new(renderer, markdown_extensions, 16);
+
+#ifdef PROFILE
+  prof_start_time = clock();
+#endif
+
   hoedown_document_render(document, ob, (uint8_t*) input.data, input.size);
+
+#ifdef PROFILE
+  prof_end_time = clock();
+
+  if(prof_start_time == (clock_t)-1 || prof_end_time == (clock_t)-1) {
+      fprintf(stderr, "[markdown.c]: Error profiling\n");
+  }
+
+  fprintf(stderr, "[markdown.c]: Input size: %lu\n", input.size);
+
+  elapsed_time = (double)(prof_end_time - prof_start_time) / CLOCKS_PER_SEC;
+
+  if (elapsed_time < 1)
+      /* time in millis */
+      fprintf(stderr, "[markdown.c]: Parsing time: %.3fms.\n", elapsed_time * 1000);
+  else
+      /* time in seconds */
+      fprintf(stderr, "[markdown.c]: Parsing time: %.5fs.\n", elapsed_time);
+#endif
 
   enif_release_binary(&input);
   hoedown_html_renderer_free(renderer);
