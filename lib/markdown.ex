@@ -3,13 +3,20 @@ defmodule Markdown do
   Markdown to HTML conversion.
   """
 
-  @on_load { :init, 0 }
+  @on_load {:init, 0}
 
-  app = Mix.Project.config[:app]
+  app = Mix.Project.config()[:app]
 
   def init do
     path = :filename.join(:code.priv_dir(unquote(app)), 'markdown')
     :ok = :erlang.load_nif(path, 0)
+
+    case Application.get_env(:markdown, :dirty_scheduling_threshold) do
+      nil -> :ok
+      value -> set_nif_threshold(value)
+    end
+
+    :ok
   end
 
   @doc ~S"""
@@ -27,11 +34,15 @@ defmodule Markdown do
   * `:autolink` - Automatically turn URLs into links (default: `false`)
 
   """
-  @spec to_html(doc :: String.t) :: String.t
-  @spec to_html(doc :: String.t, options :: Keyword.t) :: String.t
+  @spec to_html(doc :: String.t()) :: String.t()
+  @spec to_html(doc :: String.t(), options :: Keyword.t()) :: String.t()
   def to_html(doc, options \\ [])
 
   def to_html(_, _) do
+    exit(:nif_library_not_loaded)
+  end
+
+  def set_nif_threshold(_) do
     exit(:nif_library_not_loaded)
   end
 end
