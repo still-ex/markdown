@@ -1,6 +1,24 @@
 defmodule Markdown do
   @moduledoc """
   Markdown to HTML conversion.
+
+  ## Dirty Scheduling
+
+  This relies on a NIF wrapping the hoedown library.
+
+  By default the NIF is deemed as clean for input lower than 30k characters. For
+  inputs over this value, it is likely the render time will take over 1ms and thus
+  it should be scheduled on a dirty scheduler.
+
+  Since it is impossible to know beforehand, if an input will take over 1ms to be
+  processed, the 30k threshold is considered an arbitrary value. See
+  [subvisual/markdown#1](https://github.com/subvisual/markdown/pulls/1).
+
+  This value can be configured by setting the following in your `config/config.exs`:
+
+  ```elixir
+  config :markdown, dirty_scheduling_threshold: 50_000
+  ```
   """
 
   @on_load {:init, 0}
