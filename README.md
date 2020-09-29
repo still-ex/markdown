@@ -1,8 +1,14 @@
-# Markdown
+# Markdown - Subvisual fork
 
-A simple Elixir [Markdown][1] to HTML conversion library.
+A simple Elixir [Markdown][markdown] to HTML conversion library.
 
-Implemented entirely as a [NIF][2] binding to the [Hoedown][3] library.
+Implemented entirely as a [NIF][nif] binding to the [Hoedown][hoedown] library.
+
+This fork of [`devinius/markdown`][upstream] was created to keep a trustworthy and
+stable source for the `markdown` Elixir package with the added configurations
+options and a patch for the use of dirty schedulers.
+
+The base version of this fork is [`d065dbc`][base-commit].
 
 ## Usage
 
@@ -40,10 +46,10 @@ You can find examples in the [test module](./test/markdown_test.exs).
 
 ## TODO
 
-- [ ] Use dirty schedulers [when available][4]
 - [ ] ANSI renderer
 
-[1]: http://daringfireball.net/projects/markdown/
-[2]: http://www.erlang.org/doc/tutorial/nif.html
-[3]: https://github.com/hoedown/hoedown
-[4]: https://github.com/zambal/markdown/commit/792a414de074d96ac47b5b52d212b7197ce04462
+[markdown]: http://daringfireball.net/projects/markdown/
+[nif]: http://www.erlang.org/doc/tutorial/nif.html
+[hoedown]: https://github.com/hoedown/hoedown
+[upstream]: https://github.com/devinus/markdown
+[base-commit]: https://github.com/devinus/markdown/commit/d065dbcc4e242a85ca2516fdadd0082712871fd8
