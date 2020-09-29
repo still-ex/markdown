@@ -44,6 +44,22 @@ All of these default to `false`:
 
 You can find examples in the [test module](./test/markdown_test.exs).
 
+#### Dirty Scheduling
+
+By default the NIF is deemed as clean for input lower than 30k characters. For
+inputs over this value, it is likely the render time will take over 1ms and thus
+it should be scheduled on a dirty scheduler.
+
+Since it is impossible to know beforehand, if an input will take over 1ms to be
+processed, the 30k threshold is considered an arbitrary value. See
+[subvisual/markdown#1][subvisual/markdown#1].
+
+This value can be configured by setting the following in your `config/config.exs`:
+
+```elixir
+config :markdown, dirty_scheduling_threshold: 50_000
+```
+
 ## TODO
 
 - [ ] ANSI renderer
@@ -53,3 +69,4 @@ You can find examples in the [test module](./test/markdown_test.exs).
 [hoedown]: https://github.com/hoedown/hoedown
 [upstream]: https://github.com/devinus/markdown
 [base-commit]: https://github.com/devinus/markdown/commit/d065dbcc4e242a85ca2516fdadd0082712871fd8
+[subvisual/markdown#1]: https://github.com/subvisual/markdown/pulls/1

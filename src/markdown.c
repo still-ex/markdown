@@ -31,6 +31,10 @@ typedef struct {
   ERL_NIF_TERM atom_use_xhtml;
 } markdown_priv;
 
+/* semi-arbitrary value that configures the minimum input threshold to schedule
+ * the NIF to run in a dirty scheduler */
+static unsigned long dirty_scheduling_threshold = 30000;
+
 int
 apply_extension(const ERL_NIF_TERM* tuple, ERL_NIF_TERM field, ERL_NIF_TERM atom_true, unsigned int flag, unsigned int* extensions) {
     if (enif_compare(tuple[0], field) == 0) {
@@ -105,7 +109,7 @@ apply_html_extensions(const ERL_NIF_TERM* tuple, markdown_priv* priv, unsigned i
 }
 
 static ERL_NIF_TERM
-to_html(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]) {
+do_to_html(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]) {
   ErlNifBinary input;
   ErlNifBinary output;
 
@@ -165,19 +169,19 @@ to_html(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]) {
   prof_end_time = clock();
 
   if(prof_start_time == (clock_t)-1 || prof_end_time == (clock_t)-1) {
-      fprintf(stderr, "[markdown.c]: Error profiling\n");
+      enif_fprintf(stderr, "[markdown.c]: Error profiling\n");
   }
 
-  fprintf(stderr, "[markdown.c]: Input size: %lu\n", input.size);
+  enif_fprintf(stderr, "[markdown.c]: Input size: %lu\n", input.size);
 
   elapsed_time = (double)(prof_end_time - prof_start_time) / CLOCKS_PER_SEC;
 
   if (elapsed_time < 1)
       /* time in millis */
-      fprintf(stderr, "[markdown.c]: Parsing time: %.3fms.\n", elapsed_time * 1000);
+      enif_fprintf(stderr, "[markdown.c]: Parsing time: %.3fms.\n", elapsed_time * 1000);
   else
       /* time in seconds */
-      fprintf(stderr, "[markdown.c]: Parsing time: %.5fs.\n", elapsed_time);
+      enif_fprintf(stderr, "[markdown.c]: Parsing time: %.5fs.\n", elapsed_time);
 #endif
 
   enif_release_binary(&input);
@@ -191,8 +195,51 @@ to_html(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]) {
   return enif_make_binary(env, &output);
 }
 
+static ERL_NIF_TERM
+to_html(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]) {
+  ErlNifBinary input;
+
+  if (enif_inspect_binary(env, argv[0], &input) == 0) {
+    return enif_make_badarg(env);
+  }
+
+  if (input.size < 1) {
+    return argv[0];
+  }
+
+  if (input.size > dirty_scheduling_threshold) {
+#ifdef PROFILE
+      enif_fprintf(stderr, "[markdown.c]: Input above arbitrary threshold. Running dirty NIF.\n");
+#endif
+      return enif_schedule_nif(env, "do_to_html", ERL_NIF_DIRTY_JOB_CPU_BOUND, do_to_html, argc, argv);
+  } else {
+#ifdef PROFILE
+      enif_fprintf(stderr, "[markdown.c]: Input below arbitrary threshold. Running regular NIF.\n");
+#endif
+      return do_to_html(env, argc, argv);
+  }
+}
+
+static unsigned long
+set_nif_threshold(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]) {
+    int input;
+
+    if (enif_get_int(env, argv[0], &input) == 0) {
+        return enif_make_badarg(env);
+    }
+
+    if (input <= 0) {
+        return enif_make_badarg(env);
+    }
+
+    dirty_scheduling_threshold = (unsigned long)input;
+
+    return dirty_scheduling_threshold;
+}
+
 static ErlNifFunc funcs[] = {
-  { "to_html", 2, to_html }
+    { "to_html", 2, to_html },
+    { "set_nif_threshold", 1, set_nif_threshold }
 };
 
 static int
