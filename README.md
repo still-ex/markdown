@@ -100,7 +100,7 @@ maintained with :heart: by [Subvisual][subvisual].
 
 ![Subvisual](https://raw.githubusercontent.com/subvisual/guides/master/github/templates/logos/blue.png)
 
-[build-badge]: https://github.com/subvisual/markdown/workflows/.github/workflows/main.yml/badge.svg
+[build-badge]: https://github.com/subvisual/markdown/workflows/Test%20%26%20Lint%20Suite/badge.svg
 [markdown]: http://daringfireball.net/projects/markdown/
 [nif]: http://www.erlang.org/doc/tutorial/nif.html
 [hoedown]: https://github.com/hoedown/hoedown
