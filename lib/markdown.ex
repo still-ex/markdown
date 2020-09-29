@@ -45,12 +45,26 @@ defmodule Markdown do
       iex> Markdown.to_html "http://elixir-lang.org/", autolink: true
       "<p><a href=\"http://elixir-lang.org/\">http://elixir-lang.org/</a></p>\n"
 
-  Available output options:
+  Available output options (all default to false):
 
-  * `:tables` - Enables Markdown Extra style tables (default: `false`)
-  * `:fenced_code` - Enables fenced code blocks (default: `false`)
-  * `:autolink` - Automatically turn URLs into links (default: `false`)
-
+  * `:autolink` - Automatically turn URLs into links.
+  * `:disable_indented_code` - Don't indented code blocks as `<code>`.
+  * `:escape` - Escape all HTML tags.
+  * `:fenced_code` - Enables fenced code blocks.
+  * `:hard_wrap` - Replace line breaks with `<hr>` tags.
+  * `:highlight` - Replace `==highlight==` blocks with `<mark>` tags.
+  * `:math` - Parse TeX-based `$$math$$` syntax.
+  * `:math_explicit` - Requires `math: true`. Parse `$math$` as inline and
+  * `$$math$$` as blocks, instead of attempting to guess.
+  * `:no_intra_emphasis` - Don't parse `underscores_between_words` as `<em>` tags.
+  * `:quote` - Render "quotation marks" as `<q>` tags.
+  * `:skip_html` - Strip HTML tags.
+  * `:space_headers` - Require a space after `#` in the headers.
+  * `:strikethrough` - Parse `~~text~~` as `<del>` tags.
+  * `:superscript` - Parse `^text` as `<sup>` tags.
+  * `:tables` - Enables Markdown Extra style tables.
+  * `:underline` - Parse `_text_` as `<u>` tags.
+  * `:use_xhtml` - Use XHTML instead of HTML.
   """
   @spec to_html(doc :: String.t()) :: String.t()
   @spec to_html(doc :: String.t(), options :: Keyword.t()) :: String.t()
