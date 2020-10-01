@@ -1,4 +1,4 @@
-defmodule Fxt do
+defmodule Markdown.Fxt do
   def xsmall, do: File.read!("test/fixtures/xsmall.md")
 
   def small, do: File.read!("test/fixtures/small.md")
@@ -9,3 +9,5 @@ defmodule Fxt do
 
   def xlong, do: File.read!("test/fixtures/xlong.md")
 end
+
+alias Markdown.Fxt

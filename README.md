@@ -61,7 +61,7 @@ All of these default to `false`:
 
 You can find examples in the [test module](./test/markdown_test.exs).
 
-#### Dirty Scheduling
+### Dirty Scheduling
 
 By default the NIF is deemed as clean for input lower than 30k characters. For
 inputs over this value, it is likely the render time will take over 1ms and thus
@@ -75,6 +75,41 @@ This value can be configured by setting the following in your `config/config.exs
 
 ```elixir
 config :markdown, dirty_scheduling_threshold: 50_000
+```
+
+### Profiling
+
+There is basic profiling available. It should only be used for library
+development purposes. To enable it, compile the project with the `PROFILE` flag
+set:
+
+```sh
+PROFILE=1 make
+```
+
+This will compile a version that clocks the time before and after rendering and
+provides information regarding the type of scheduling being made.
+
+The project includes five fixture markdown files of various sizes and the
+bundled `.iex.exs` file defines a module to read from those. You can use them to
+check the profiling info by doing so:
+
+```elixir
+# run:
+# PROFILE=1 make && iex -S mix
+# before trying these examples:
+
+iex(1)> Fxt.small() |> Markdown.to_html()
+[markdown.c]: Input below arbitrary threshold. Running regular NIF.
+[markdown.c]: Input size: 3399
+[markdown.c]: Parsing time: 0.091ms.
+"<hr>\n\n<p>path: /posts/69-undersampling-of-failure/\n" <> ...
+
+iex(2)> Fxt.xlong() |> Markdown.to_html()
+[markdown.c]: Input above arbitrary threshold. Running dirty NIF.
+[markdown.c]: Input size: 55506
+[markdown.c]: Parsing time: 2.087ms.
+"<h1>Markdown: Syntax</h1>\n\n<ul id=\"ProjectSubmenu\">\n" <> ...
 ```
 
 ## Contributing
