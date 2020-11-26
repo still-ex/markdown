@@ -24,6 +24,8 @@ defmodule Markdown.Mixfile do
       app: :markdown,
       version: @version,
       elixir: ">= 0.14.3 and < 2.0.0",
+      description: "A simple Elixir Markdown to HTML conversion library.",
+      package: package(),
       compilers: [:hoedown, :elixir, :app],
       deps: deps()
     ]
@@ -35,5 +37,13 @@ defmodule Markdown.Mixfile do
 
   defp deps do
     []
+  end
+
+  defp package() do
+    [
+      name: "still_markdown",
+      licenses: ["Unlicense"],
+      links: %{"GitHub" => "https://github.com/subvisual/markdown"}
+    ]
   end
 end
