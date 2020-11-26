@@ -34,6 +34,6 @@ defmodule Markdown.Mixfile do
   end
 
   defp deps do
-    [{:hoedown, github: "hoedown/hoedown", app: false}]
+    []
   end
 end

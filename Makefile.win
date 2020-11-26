@@ -4,10 +4,10 @@
 !INCLUDE Makefile.auto.win
 !ENDIF
 
-!IF [cmd /C IF NOT EXIST deps\hoedown EXIT 1]
+!IF [cmd /C IF NOT EXIST src\hoedown EXIT 1]
 HOEDOWN_PATH = ..\hoedown
 !ELSE
-HOEDOWN_PATH = deps\hoedown
+HOEDOWN_PATH = src\hoedown
 !ENDIF
 
 NMAKE = nmake /$(MAKEFLAGS)

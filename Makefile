@@ -4,10 +4,10 @@ CFLAGS = -g -O3 -ansi -pedantic -Wall -Wextra -Wno-unused-parameter
 ERLANG_PATH = $(shell erl -eval 'io:format("~s", [lists:concat([code:root_dir(), "/erts-", erlang:system_info(version), "/include"])])' -s init stop -noshell)
 CFLAGS += -I$(ERLANG_PATH)
 
-ifeq ($(wildcard deps/hoedown),)
+ifeq ($(wildcard src/hoedown),)
 	HOEDOWN_PATH = ../hoedown
 else
-	HOEDOWN_PATH = deps/hoedown
+	HOEDOWN_PATH = src/hoedown
 endif
 
 CFLAGS += -I$(HOEDOWN_PATH)/src
