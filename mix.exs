@@ -17,7 +17,7 @@ end
 defmodule Markdown.Mixfile do
   use Mix.Project
 
-  @version "0.1.0"
+  @version "0.1.1"
 
   def project do
     [
@@ -43,7 +43,21 @@ defmodule Markdown.Mixfile do
     [
       name: "still_markdown",
       licenses: ["Unlicense"],
-      links: %{"GitHub" => "https://github.com/subvisual/markdown"}
+      links: %{"GitHub" => "https://github.com/subvisual/markdown"},
+      files: [
+        "src/**/*.c",
+        "src/**/*.h",
+        "src/hoedown/Makefile*",
+        "src/hoedown/hoedown.def",
+        "src/hoedown/html*",
+        "priv/.gitignore",
+        "lib",
+        "*LICENSE*",
+        "mix.exs",
+        "README*",
+        "mix*",
+        "Makefile*"
+      ]
     ]
   end
 end
