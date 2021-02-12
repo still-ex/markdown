@@ -1,16 +1,21 @@
 defmodule Mix.Tasks.Compile.Hoedown do
   def run(_) do
-    if match?({:win32, _}, :os.type()) do
-      {result, _error_code} =
-        System.cmd("nmake", ["/F", "Makefile.win", "priv\\markdown.dll"], stderr_to_stdout: true)
+    {make, args} =
+      case :os.type() do
+        {:win32, _} -> {"nmake", ["/F", "Makefile.win", "priv\\markdown.dll"]}
+        {_, :freebsd} -> {"gmake", ["priv/markdown.so"]}
+        {:unix, _} -> {"make", ["priv/markdown.so"]}
+      end
 
-      IO.binwrite(result)
-    else
-      {result, _error_code} = System.cmd("make", ["priv/markdown.so"], stderr_to_stdout: true)
-      IO.binwrite(result)
+    case System.cmd(make, args, stderr_to_stdout: true) do
+      {result, 0} ->
+        IO.binwrite(result)
+        :ok
+
+      {result, _} ->
+        IO.binwrite(result)
+        :error
     end
-
-    :ok
   end
 end
 
